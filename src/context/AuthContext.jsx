@@ -16,6 +16,7 @@ export function AuthProvider({ children }) {
   const login = async (credentials) => {
     const { data } = await loginApi(credentials)
     localStorage.setItem('accessToken', data.accessToken)
+    localStorage.setItem('refreshToken', data.refreshToken)
     localStorage.setItem('user', JSON.stringify(data))
     setUser(data)
     return data
@@ -24,6 +25,7 @@ export function AuthProvider({ children }) {
   const register = async (payload) => {
     const { data } = await registerApi(payload)
     localStorage.setItem('accessToken', data.accessToken)
+    localStorage.setItem('refreshToken', data.refreshToken)
     localStorage.setItem('user', JSON.stringify(data))
     setUser(data)
     return data
@@ -31,6 +33,7 @@ export function AuthProvider({ children }) {
 
   const logout = () => {
     localStorage.removeItem('accessToken')
+    localStorage.removeItem('refreshToken')
     localStorage.removeItem('user')
     setUser(null)
   }

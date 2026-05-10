@@ -16,8 +16,9 @@ export default function Login() {
     try {
       await login(form)
       navigate('/')
-    } catch {
-      setError('Email ose fjalëkalimi është i gabuar.')
+    } catch (err) {
+      const msg = err?.response?.data?.message
+      setError(msg || 'Email ose fjalëkalimi është i gabuar.')
     } finally {
       setLoading(false)
     }

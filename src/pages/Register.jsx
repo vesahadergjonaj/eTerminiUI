@@ -1,13 +1,26 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import { getTenants } from '../api/tenantsApi'
 
 export default function Register() {
-  const [form, setForm] = useState({ firstName: '', lastName: '', email: '', password: '', phoneNumber: '' })
+  const [form, setForm] = useState({
+    firstName: '', lastName: '', email: '', password: '', phoneNumber: '', tenantId: ''
+  })
+  const [tenants, setTenants] = useState([])
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const { register } = useAuth()
   const navigate = useNavigate()
+
+  useEffect(() => {
+    getTenants()
+      .then(({ data }) => {
+        setTenants(data)
+        if (data.length > 0) setForm(f => ({ ...f, tenantId: data[0].id }))
+      })
+      .catch(() => {})
+  }, [])
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -16,8 +29,9 @@ export default function Register() {
     try {
       await register(form)
       navigate('/')
-    } catch {
-      setError('Gabim gjatë regjistrimit. Provoni përsëri.')
+    } catch (err) {
+      const msg = err?.response?.data?.message
+      setError(msg || 'Gabim gjatë regjistrimit. Provoni përsëri.')
     } finally {
       setLoading(false)
     }
@@ -83,6 +97,19 @@ export default function Register() {
             className="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           />
         </div>
+        {tenants.length > 0 && (
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-1.5">Institucioni</label>
+            <select
+              required value={form.tenantId} onChange={set('tenantId')}
+              className="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-slate-700"
+            >
+              {tenants.map(t => (
+                <option key={t.id} value={t.id}>{t.name}</option>
+              ))}
+            </select>
+          </div>
+        )}
 
         <p className="text-xs text-slate-400 -mt-1">
           Duke u regjistruar, pranoni <span className="text-blue-600 cursor-pointer hover:underline">Kushtet e Shërbimit</span>.
