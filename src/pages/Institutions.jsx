@@ -2,8 +2,23 @@ import { useState, useMemo } from 'react'
 import { useInstitutions } from '../hooks/useInstitutions'
 
 const categoryIcons = {
-  'Spital': '🏥', 'Polici': '🚔', 'Komunë': '🏛️', 'Ministri': '🏢',
+  'Spital': '🏥',
+  'Polici': '🚔',
+  'Komunë': '🏛️',
+  'Ministri': '🏢',
+  'Dentar': '🦷',
+  'Social': '📋',
 }
+
+const categoryFilters = [
+  { label: 'Të gjitha', key: null },
+  { label: '🏥 Spitalet', key: 'Spital' },
+  { label: '🚔 Policia', key: 'Polici' },
+  { label: '🏛️ Komunat', key: 'Komunë' },
+  { label: '🏢 Ministritë', key: 'Ministri' },
+  { label: '🦷 Stomatologjia', key: 'Dentar' },
+  { label: '📋 Sh. Sociale', key: 'Social' },
+]
 
 const getIcon = (name = '') => {
   for (const [key, icon] of Object.entries(categoryIcons)) {
@@ -15,6 +30,7 @@ const getIcon = (name = '') => {
 export default function Institutions() {
   const [search, setSearch] = useState('')
   const [city, setCity] = useState('')
+  const [activeCategory, setActiveCategory] = useState(null)
   const { institutions, loading, error } = useInstitutions()
 
   const cities = useMemo(
@@ -22,38 +38,54 @@ export default function Institutions() {
     [institutions]
   )
 
-  const filtered = useMemo(() =>
-    institutions.filter((inst) => {
-      const matchSearch =
-        inst.name.toLowerCase().includes(search.toLowerCase()) ||
-        (inst.description || '').toLowerCase().includes(search.toLowerCase())
-      const matchCity = city ? inst.city === city : true
-      return matchSearch && matchCity
-    }),
-    [institutions, search, city]
+  const filtered = useMemo(
+    () =>
+      institutions.filter((inst) => {
+        const matchSearch =
+          inst.name.toLowerCase().includes(search.toLowerCase()) ||
+          (inst.description || '').toLowerCase().includes(search.toLowerCase())
+        const matchCity = city ? inst.city === city : true
+        const matchCategory = activeCategory ? inst.name.includes(activeCategory) : true
+        return matchSearch && matchCity && matchCategory
+      }),
+    [institutions, search, city, activeCategory]
   )
+
+  const hasFilters = search || city || activeCategory
 
   return (
     <div>
-      {/* Header */}
-      <div className="bg-gradient-to-r from-blue-700 to-blue-800 text-white py-10 px-4">
+      {/* Page header */}
+      <div className="bg-gradient-to-r from-blue-700 to-blue-900 text-white py-12 px-4">
         <div className="max-w-7xl mx-auto">
-          <h1 className="text-3xl font-bold mb-2">Institucionet</h1>
-          <p className="text-blue-200">Zgjidhni institucionin dhe rezervoni terminin tuaj online</p>
+          <div className="flex items-center gap-2 text-blue-300 text-xs mb-3">
+            <span>Kryefaqja</span>
+            <span>›</span>
+            <span className="text-white">Institucionet</span>
+          </div>
+          <h1 className="text-3xl md:text-4xl font-bold mb-2">Institucionet</h1>
+          <p className="text-blue-200">
+            Zgjidhni institucionin dhe rezervoni terminin tuaj online
+          </p>
         </div>
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
-        {/* Search & Filter */}
-        <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-4 mb-8 flex flex-col sm:flex-row gap-3">
+
+        {/* Search & Filter bar */}
+        <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-4 mb-5 flex flex-col sm:flex-row gap-3">
           <div className="flex-1 relative">
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">🔍</span>
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </span>
             <input
               type="text"
               placeholder="Kërko institucion ose shërbim..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-9 pr-4 py-2.5 text-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full pl-9 pr-4 py-2.5 text-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
           <select
@@ -62,35 +94,60 @@ export default function Institutions() {
             className="border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-slate-700 min-w-[160px]"
           >
             <option value="">📍 Të gjitha qytetet</option>
-            {cities.map((c) => <option key={c} value={c}>{c}</option>)}
+            {cities.map((c) => (
+              <option key={c} value={c}>{c}</option>
+            ))}
           </select>
-          {(search || city) && (
+          {hasFilters && (
             <button
-              onClick={() => { setSearch(''); setCity('') }}
-              className="text-sm text-slate-500 hover:text-slate-700 px-3 py-2 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors"
+              onClick={() => { setSearch(''); setCity(''); setActiveCategory(null) }}
+              className="text-sm text-slate-500 hover:text-slate-700 px-3 py-2 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors whitespace-nowrap"
             >
               Pastro
             </button>
           )}
         </div>
 
+        {/* Category chips */}
+        <div className="flex gap-2 overflow-x-auto pb-1 mb-6 scrollbar-none">
+          {categoryFilters.map((cat) => (
+            <button
+              key={cat.label}
+              onClick={() => setActiveCategory(cat.key)}
+              className={`flex-shrink-0 text-sm px-4 py-2 rounded-full border font-medium transition-all ${
+                activeCategory === cat.key
+                  ? 'bg-blue-600 text-white border-blue-600 shadow-sm'
+                  : 'bg-white text-slate-600 border-slate-200 hover:border-blue-300 hover:text-blue-700'
+              }`}
+            >
+              {cat.label}
+            </button>
+          ))}
+        </div>
+
         {/* Results count */}
         {!loading && !error && (
           <p className="text-slate-500 text-sm mb-5">
-            {filtered.length === 0 ? 'Nuk u gjet asnjë institucion' : `${filtered.length} institucione`}
+            {filtered.length === 0
+              ? 'Nuk u gjet asnjë institucion'
+              : `${filtered.length} institucione`}
             {city && <span className="text-blue-600"> në {city}</span>}
           </p>
         )}
 
-        {/* Loading */}
+        {/* Loading skeleton */}
         {loading && (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {[...Array(6)].map((_, i) => (
               <div key={i} className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 animate-pulse">
-                <div className="w-12 h-12 bg-slate-200 rounded-xl mb-4" />
+                <div className="flex justify-between mb-4">
+                  <div className="w-12 h-12 bg-slate-200 rounded-xl" />
+                  <div className="w-16 h-5 bg-slate-100 rounded-full" />
+                </div>
                 <div className="h-4 bg-slate-200 rounded w-2/3 mb-2" />
                 <div className="h-3 bg-slate-100 rounded w-full mb-1" />
-                <div className="h-3 bg-slate-100 rounded w-4/5" />
+                <div className="h-3 bg-slate-100 rounded w-4/5 mb-5" />
+                <div className="h-9 bg-slate-100 rounded-xl" />
               </div>
             ))}
           </div>
@@ -103,13 +160,19 @@ export default function Institutions() {
           </div>
         )}
 
-        {/* Empty */}
+        {/* Empty state */}
         {!loading && !error && filtered.length === 0 && (
           <div className="text-center py-20">
-            <p className="text-5xl mb-4">🔍</p>
-            <p className="text-slate-500 text-lg">Nuk u gjet asnjë institucion.</p>
-            <button onClick={() => { setSearch(''); setCity('') }} className="mt-4 text-blue-600 hover:underline text-sm">
-              Pastro filtrat
+            <div className="w-16 h-16 bg-slate-100 rounded-2xl flex items-center justify-center text-3xl mx-auto mb-4">
+              🔍
+            </div>
+            <p className="text-slate-600 font-semibold text-lg mb-1">Nuk u gjet asnjë institucion</p>
+            <p className="text-slate-400 text-sm mb-5">Provoni të ndryshoni filtrat ose kërkimin</p>
+            <button
+              onClick={() => { setSearch(''); setCity(''); setActiveCategory(null) }}
+              className="text-blue-600 hover:underline text-sm font-medium"
+            >
+              Pastro të gjitha filtrat
             </button>
           </div>
         )}
@@ -120,9 +183,9 @@ export default function Institutions() {
             {filtered.map((inst) => (
               <div
                 key={inst.id}
-                className="bg-white rounded-2xl shadow-sm border border-slate-100 hover:shadow-md hover:border-blue-200 transition-all group overflow-hidden"
+                className="bg-white rounded-2xl shadow-sm border border-slate-100 hover:shadow-md hover:border-blue-200 transition-all group overflow-hidden flex flex-col"
               >
-                <div className="p-6">
+                <div className="p-6 flex-1">
                   <div className="flex items-start justify-between mb-4">
                     <div className="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center text-2xl">
                       {getIcon(inst.name)}
@@ -137,7 +200,9 @@ export default function Institutions() {
                     {inst.name}
                   </h3>
                   {inst.description && (
-                    <p className="text-slate-500 text-sm leading-relaxed line-clamp-2">{inst.description}</p>
+                    <p className="text-slate-500 text-sm leading-relaxed line-clamp-2">
+                      {inst.description}
+                    </p>
                   )}
                 </div>
                 <div className="px-6 pb-5">
