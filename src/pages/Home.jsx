@@ -1,5 +1,7 @@
 import { Link } from 'react-router-dom'
+import { useState, useEffect } from 'react'
 import { usePing } from '../hooks/useTest'
+import { getTenantsCount } from '../api/tenantsApi'
 
 const categories = [
   { icon: '🏥', title: 'Spitalet & Klinika', desc: 'QKUK dhe spitalet rajonale', color: 'from-red-50 to-red-100 border-red-200', iconBg: 'bg-red-100' },
@@ -10,8 +12,7 @@ const categories = [
   { icon: '📋', title: 'Shërbime Sociale', desc: 'Asistencë sociale & pensione', color: 'from-sky-50 to-sky-100 border-sky-200', iconBg: 'bg-sky-100' },
 ]
 
-const stats = [
-  { value: '20+', label: 'Institucione' },
+const staticStats = [
   { value: '50+', label: 'Departamente' },
   { value: '1,000+', label: 'Termin në ditë' },
   { value: '0 min', label: 'Pritje në radhë' },
@@ -27,6 +28,11 @@ const timeSlots = ['09:00', '09:30', '10:00', '10:30', '11:00', '14:00']
 
 export default function Home() {
   const { status, loading: pingLoading } = usePing()
+  const [tenantsCount, setTenantsCount] = useState(null)
+
+  useEffect(() => {
+    getTenantsCount().then(res => setTenantsCount(res.data)).catch(() => {})
+  }, [])
 
   return (
     <div>
@@ -74,7 +80,7 @@ export default function Home() {
               {/* Trust badges */}
               <div className="flex items-center gap-6 mt-10 pt-8 border-t border-white/15">
                 <div className="text-center">
-                  <p className="text-white font-bold text-lg">20+</p>
+                  <p className="text-white font-bold text-lg">{tenantsCount !== null ? tenantsCount : '...'}</p>
                   <p className="text-blue-300 text-xs">Institucione</p>
                 </div>
                 <div className="w-px h-8 bg-white/20" />
@@ -178,7 +184,13 @@ export default function Home() {
       {/* Stats */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 pt-8 mb-14">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {stats.map((s) => (
+          <div className="bg-white rounded-2xl p-5 shadow-sm border border-slate-100 text-center">
+            <p className="text-3xl font-bold text-blue-700 mb-1">
+              {tenantsCount !== null ? tenantsCount : '...'}
+            </p>
+            <p className="text-slate-500 text-sm">Institucione</p>
+          </div>
+          {staticStats.map((s) => (
             <div key={s.label} className="bg-white rounded-2xl p-5 shadow-sm border border-slate-100 text-center">
               <p className="text-3xl font-bold text-blue-700 mb-1">{s.value}</p>
               <p className="text-slate-500 text-sm">{s.label}</p>
