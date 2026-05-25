@@ -9,6 +9,7 @@ export function useAppointments() {
 
   const fetchAppointments = useCallback(async () => {
     setLoading(true)
+    //console.log('Fetching appointments...');
     setError(null)
     try {
       const { data } = await getMyAppointments()

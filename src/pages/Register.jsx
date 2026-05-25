@@ -30,7 +30,7 @@ export default function Register() {
     setError('')
     setLoading(true)
     try {
-      await register(form)
+      await register({ ...form, tenantId: form.tenantId || null })
       navigate('/')
     } catch (err) {
       const msg = err?.response?.data?.message
