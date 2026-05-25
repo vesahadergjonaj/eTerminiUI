@@ -24,7 +24,6 @@ const steps = [
   { step: '03', title: 'Rezervoni terminin', desc: 'Zgjidhni datën dhe orën e disponueshme dhe konfirmoni rezervimin.' },
 ]
 
-const timeSlots = ['09:00', '09:30', '10:00', '10:30', '11:00', '14:00']
 
 export default function Home() {
   const { status, loading: pingLoading } = usePing()
@@ -46,10 +45,8 @@ export default function Home() {
           }}
         />
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 py-20 md:py-28">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-
-            {/* Left content */}
-            <div className="max-w-xl">
+          <div className="flex justify-center">
+            <div className="max-w-2xl w-full">
               <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur border border-white/20 text-white/80 text-xs px-3 py-1.5 rounded-full mb-6">
                 <span className={`w-1.5 h-1.5 rounded-full ${pingLoading ? 'bg-yellow-400 animate-pulse' : status ? 'bg-green-400' : 'bg-red-400'}`} />
                 {pingLoading ? 'Duke kontrolluar...' : status ? 'Sistemi është aktiv' : 'Sistemi offline'}
@@ -96,79 +93,6 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Right — floating booking card */}
-            <div className="hidden lg:flex justify-center items-center">
-              <div className="relative">
-                <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-3xl p-6 shadow-2xl w-[320px]">
-                  {/* Header */}
-                  <div className="flex items-center gap-3 mb-5 pb-4 border-b border-white/15">
-                    <div className="w-11 h-11 bg-white/20 border border-white/30 rounded-xl flex items-center justify-center text-xl flex-shrink-0">
-                      🏥
-                    </div>
-                    <div>
-                      <p className="text-white font-semibold text-sm">QKUK – Kardiologji</p>
-                      <p className="text-blue-300 text-xs">Prishtinë, Kosovë</p>
-                    </div>
-                  </div>
-
-                  {/* Selected date */}
-                  <div className="flex items-center gap-2.5 bg-white/10 rounded-xl px-3 py-2.5 mb-4">
-                    <span className="text-lg">📅</span>
-                    <div>
-                      <p className="text-white text-sm font-semibold">15 Qershor 2025, E Hënë</p>
-                      <p className="text-blue-300 text-xs">Data e zgjedhur</p>
-                    </div>
-                  </div>
-
-                  {/* Time slots */}
-                  <p className="text-blue-300 text-xs font-medium uppercase tracking-wide mb-2">
-                    Orari i disponueshëm
-                  </p>
-                  <div className="grid grid-cols-3 gap-2 mb-4">
-                    {timeSlots.map((t, i) => (
-                      <button
-                        key={t}
-                        className={`text-xs py-2 rounded-lg font-medium transition-all ${
-                          i === 3
-                            ? 'bg-white text-blue-700 shadow-sm'
-                            : 'bg-white/10 text-blue-100 hover:bg-white/20 border border-white/10'
-                        }`}
-                      >
-                        {t}
-                      </button>
-                    ))}
-                  </div>
-
-                  {/* Doctor */}
-                  <div className="flex items-center gap-2.5 bg-white/10 rounded-xl px-3 py-2.5 mb-4">
-                    <span className="text-lg">👨‍⚕️</span>
-                    <div>
-                      <p className="text-white text-xs font-semibold">Dr. Besnik Krasniqi</p>
-                      <p className="text-blue-300 text-xs">Kardiolog • 12 vjet eksperiencë</p>
-                    </div>
-                  </div>
-
-                  <button className="w-full bg-white text-blue-700 font-semibold py-2.5 rounded-xl text-sm hover:bg-blue-50 transition-colors shadow-sm">
-                    Konfirmo terminin →
-                  </button>
-                </div>
-
-                {/* Floating badge */}
-                <div className="absolute -top-3 -right-3 bg-green-500 text-white text-xs px-3 py-1.5 rounded-full shadow-lg flex items-center gap-1.5 font-medium">
-                  <span className="w-1.5 h-1.5 bg-white rounded-full" />
-                  Termin i konfirmuar
-                </div>
-
-                {/* Floating notification */}
-                <div className="absolute -bottom-4 -left-4 bg-white text-slate-700 text-xs px-3 py-2 rounded-xl shadow-lg border border-slate-100 flex items-center gap-2">
-                  <span className="text-base">🔔</span>
-                  <div>
-                    <p className="font-semibold text-slate-800 text-xs">Kujtesë e dërguar</p>
-                    <p className="text-slate-500 text-[10px]">1 ditë para terminit</p>
-                  </div>
-                </div>
-              </div>
-            </div>
 
           </div>
         </div>
