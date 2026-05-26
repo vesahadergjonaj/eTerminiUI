@@ -74,6 +74,7 @@ export default function Navbar() {
           <div className="hidden md:flex items-center gap-8">
             {navLink('/', 'Kryefaqja')}
             {navLink('/institutions', 'Institucionet')}
+            {user && navLink('/book', 'Rezervo termin')}
             {user && navLink('/appointments', 'Terminet e mia')}
           </div>
 
@@ -176,6 +177,11 @@ export default function Navbar() {
             <Link to="/institutions" className={`text-sm px-3 py-2 rounded-lg transition-colors ${isActive('/institutions') ? 'bg-white/15 text-white font-medium' : 'text-blue-100 hover:bg-white/10 hover:text-white'}`}>
               Institucionet
             </Link>
+            {user && (
+              <Link to="/book" className={`text-sm px-3 py-2 rounded-lg transition-colors ${isActive('/book') ? 'bg-white/15 text-white font-medium' : 'text-blue-100 hover:bg-white/10 hover:text-white'}`}>
+                Rezervo termin
+              </Link>
+            )}
             {user && (
               <Link to="/appointments" className={`text-sm px-3 py-2 rounded-lg transition-colors ${isActive('/appointments') ? 'bg-white/15 text-white font-medium' : 'text-blue-100 hover:bg-white/10 hover:text-white'}`}>
                 Terminet e mia

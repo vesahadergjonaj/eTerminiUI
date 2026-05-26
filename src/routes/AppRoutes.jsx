@@ -8,6 +8,7 @@ import Login from '../pages/Login'
 import Register from '../pages/Register'
 import Institutions from '../pages/Institutions'
 import MyAppointments from '../pages/MyAppointments'
+import BookAppointment from '../pages/BookAppointment'
 import NotFound from '../pages/NotFound'
 
 export default function AppRoutes() {
@@ -21,6 +22,14 @@ export default function AppRoutes() {
           element={
             <ProtectedRoute>
               <MyAppointments />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/book"
+          element={
+            <ProtectedRoute>
+              <BookAppointment />
             </ProtectedRoute>
           }
         />
