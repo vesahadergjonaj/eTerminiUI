@@ -25,7 +25,7 @@ export default function MainLayout() {
             <div>
               <h4 className="text-white font-semibold text-sm mb-3 uppercase tracking-wide">Shërbimet</h4>
               <ul className="space-y-2 text-sm">
-                <li><Link to="/institutions" className="hover:text-white transition-colors">Institucionet</Link></li>
+                <li><Link to="/book" className="hover:text-white transition-colors">Rezervo termin</Link></li>
                 <li><Link to="/appointments" className="hover:text-white transition-colors">Terminet e mia</Link></li>
                 <li><Link to="/register" className="hover:text-white transition-colors">Regjistrohu</Link></li>
               </ul>

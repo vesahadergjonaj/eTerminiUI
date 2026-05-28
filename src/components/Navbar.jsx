@@ -73,7 +73,6 @@ export default function Navbar() {
           {/* Desktop nav links */}
           <div className="hidden md:flex items-center gap-8">
             {navLink('/', 'Kryefaqja')}
-            {navLink('/institutions', 'Institucionet')}
             {user && navLink('/book', 'Rezervo termin')}
             {user && navLink('/appointments', 'Terminet e mia')}
           </div>
@@ -173,9 +172,6 @@ export default function Navbar() {
           <div className="md:hidden border-t border-blue-600/50 pt-3 pb-4 flex flex-col gap-1">
             <Link to="/" className={`text-sm px-3 py-2 rounded-lg transition-colors ${isActive('/') ? 'bg-white/15 text-white font-medium' : 'text-blue-100 hover:bg-white/10 hover:text-white'}`}>
               Kryefaqja
-            </Link>
-            <Link to="/institutions" className={`text-sm px-3 py-2 rounded-lg transition-colors ${isActive('/institutions') ? 'bg-white/15 text-white font-medium' : 'text-blue-100 hover:bg-white/10 hover:text-white'}`}>
-              Institucionet
             </Link>
             {user && (
               <Link to="/book" className={`text-sm px-3 py-2 rounded-lg transition-colors ${isActive('/book') ? 'bg-white/15 text-white font-medium' : 'text-blue-100 hover:bg-white/10 hover:text-white'}`}>

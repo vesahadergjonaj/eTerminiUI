@@ -6,7 +6,6 @@ import ProtectedRoute from '../components/ProtectedRoute'
 import Home from '../pages/Home'
 import Login from '../pages/Login'
 import Register from '../pages/Register'
-import Institutions from '../pages/Institutions'
 import MyAppointments from '../pages/MyAppointments'
 import BookAppointment from '../pages/BookAppointment'
 import NotFound from '../pages/NotFound'
@@ -16,7 +15,6 @@ export default function AppRoutes() {
     <Routes>
       <Route element={<MainLayout />}>
         <Route path="/" element={<Home />} />
-        <Route path="/institutions" element={<Institutions />} />
         <Route
           path="/appointments"
           element={

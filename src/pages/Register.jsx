@@ -9,6 +9,8 @@ export default function Register() {
     firstName: '', lastName: '', email: '', password: '', phoneNumber: '', tenantId: ''
   })
   const [tenants, setTenants] = useState([])
+  const [tenantsLoading, setTenantsLoading] = useState(true)
+  const [tenantsError, setTenantsError] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const [showPass, setShowPass] = useState(false)
@@ -17,24 +19,42 @@ export default function Register() {
   const navigate = useNavigate()
 
   useEffect(() => {
+    setTenantsLoading(true)
     getTenants()
       .then(({ data }) => {
-        setTenants(data)
-        if (data.length > 0) setForm(f => ({ ...f, tenantId: data[0].id }))
+        const list = Array.isArray(data) ? data : []
+        setTenants(list)
+        if (list.length > 0) setForm(f => ({ ...f, tenantId: list[0].id }))
+        else setTenantsError('Nuk u gjet asnjë institucion. Kontaktoni administratorin.')
       })
-      .catch(() => {})
+      .catch(() => {
+        setTenantsError('Nuk u ngarkuan institucionet. Provoni përsëri më vonë.')
+      })
+      .finally(() => setTenantsLoading(false))
   }, [])
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
+
+    if (!form.tenantId) {
+      setError('Zgjidhni një institucion para se të vazhdoni.')
+      return
+    }
+
     setLoading(true)
     try {
-      await register({ ...form, tenantId: form.tenantId || null })
+      await register({ ...form, tenantId: form.tenantId })
       navigate('/')
     } catch (err) {
-      const msg = err?.response?.data?.message
-      setError(msg || 'Gabim gjatë regjistrimit. Provoni përsëri.')
+      let msg = err?.response?.data?.message
+      if (!msg) {
+        if (!err?.response) msg = 'Lidhja me sistemin dështoi. Provoni përsëri.'
+        else if (err.response.status === 409) msg = 'Ky email është tashmë i regjistruar.'
+        else if (err.response.status >= 500) msg = 'Diçka shkoi keq. Provoni më vonë.'
+        else msg = 'Gabim gjatë regjistrimit. Provoni përsëri.'
+      }
+      setError(msg)
     } finally {
       setLoading(false)
     }
@@ -141,21 +161,32 @@ export default function Register() {
           />
         </Field>
 
-        {tenants.length > 0 && (
-          <Field label="Institucioni" required>
+        <Field label="Institucioni" required>
+          {tenantsLoading ? (
+            <div className={`${inputCls} flex items-center gap-2 text-slate-400`}>
+              <Loader2 className="w-4 h-4 animate-spin" />
+              Duke ngarkuar institucionet...
+            </div>
+          ) : tenantsError ? (
+            <div className="border border-amber-200 bg-amber-50 text-amber-800 text-xs rounded-xl px-4 py-3 flex items-start gap-2">
+              <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" />
+              <span>{tenantsError}</span>
+            </div>
+          ) : (
             <div className="relative">
               <select
                 required value={form.tenantId} onChange={set('tenantId')}
                 className={`${inputCls} appearance-none pr-10 cursor-pointer`}
               >
+                <option value="" disabled>Zgjidhni një institucion...</option>
                 {tenants.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
               </select>
               <svg className="absolute right-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
               </svg>
             </div>
-          </Field>
-        )}
+          )}
+        </Field>
 
         {/* Checkbox */}
         <label className="flex items-start gap-2.5 cursor-pointer group select-none">
@@ -179,7 +210,7 @@ export default function Register() {
 
         {/* CTA Button */}
         <button
-          type="submit" disabled={loading || !agreed}
+          type="submit" disabled={loading || !agreed || !form.tenantId}
           className="group relative w-full h-12 rounded-xl font-semibold text-sm text-white overflow-hidden disabled:opacity-50 disabled:cursor-not-allowed transition-all hover:-translate-y-0.5"
         >
           {/* Gradient background */}

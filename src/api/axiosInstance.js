@@ -14,8 +14,12 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (res) => res,
   (err) => {
-    if (err.response?.status === 401) {
+    // Only redirect on 401 if the user actually had a session (token expired)
+    // Guests browsing public pages should NOT be forced to /login
+    if (err.response?.status === 401 && localStorage.getItem('accessToken')) {
       localStorage.removeItem('accessToken')
+      localStorage.removeItem('refreshToken')
+      localStorage.removeItem('user')
       window.location.href = '/login'
     }
     return Promise.reject(err)
