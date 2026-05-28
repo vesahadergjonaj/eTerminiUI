@@ -1,5 +1,6 @@
-import { Calendar, CalendarClock, Clock, FileText, Stethoscope, Ban, Loader2 } from 'lucide-react'
+import { Building2, Calendar, CalendarClock, Clock, FileText, UserRound, Ban, Loader2 } from 'lucide-react'
 import StatusBadge from './StatusBadge'
+import { getCategoryVisual } from '../booking/categoryIcons'
 
 const isActive = (status) => status === 'Pending' || status === 'Confirmed'
 
@@ -37,29 +38,37 @@ function Field({ Icon, label, primary, secondary, full }) {
 
 export default function AppointmentCard({ appointment, cancelling, rescheduling, onCancel, onReschedule }) {
   const showActions = isActive(appointment.status)
-  const doctorLine = [appointment.doctorTitle, appointment.doctorFullName]
-    .filter(Boolean)
-    .join(' · ') || 'Mjeku nuk është caktuar'
+  const { Icon: CategoryIcon, tone: categoryTone } = getCategoryVisual(appointment.categoryName)
+  const headerTitle = appointment.serviceName || appointment.doctorFullName || 'Termin'
+  const headerSub = appointment.serviceName
+    ? (appointment.institutionName || 'Shërbim publik')
+    : (appointment.doctorTitle || 'Termin')
 
   return (
     <article className="bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-all overflow-hidden">
-      <div className="flex items-center justify-between px-5 py-2.5 bg-slate-50/70 border-b border-slate-100">
-        <StatusBadge status={appointment.status} />
-        <span className="text-[10px] uppercase tracking-wider text-slate-400 font-semibold">
+      <div className="flex items-center justify-between px-5 py-2.5 bg-slate-50/70 border-b border-slate-100 gap-3">
+        <div className="flex items-center gap-2 min-w-0">
+          <StatusBadge status={appointment.status} />
+          {appointment.categoryName && (
+            <span className={`hidden sm:inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-full font-medium ${categoryTone}`}>
+              <CategoryIcon className="w-3 h-3" />
+              {appointment.categoryName}
+            </span>
+          )}
+        </div>
+        <span className="text-[10px] uppercase tracking-wider text-slate-400 font-semibold shrink-0">
           ID: {String(appointment.id).slice(0, 8)}
         </span>
       </div>
 
       <div className="p-5 sm:p-6">
         <div className="flex items-start gap-3 mb-4">
-          <div className="w-11 h-11 bg-blue-50 rounded-xl flex items-center justify-center shrink-0">
-            <Stethoscope className="w-5 h-5 text-blue-600" />
+          <div className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 ${categoryTone}`}>
+            <CategoryIcon className="w-5 h-5" />
           </div>
           <div className="min-w-0">
-            <h3 className="font-bold text-slate-900 text-base leading-tight truncate">
-              {appointment.doctorFullName || 'Mjeku'}
-            </h3>
-            <p className="text-slate-500 text-sm truncate">{appointment.doctorTitle || 'Termin'}</p>
+            <h3 className="font-bold text-slate-900 text-base leading-tight truncate">{headerTitle}</h3>
+            <p className="text-slate-500 text-sm truncate">{headerSub}</p>
           </div>
         </div>
 
@@ -75,6 +84,21 @@ export default function AppointmentCard({ appointment, cancelling, rescheduling,
             label="Ora"
             primary={formatTime(appointment.appointmentDate)}
           />
+          {appointment.doctorFullName && (
+            <Field
+              Icon={UserRound}
+              label="Zyrtari"
+              primary={appointment.doctorFullName}
+              secondary={appointment.doctorTitle}
+            />
+          )}
+          {appointment.institutionName && (
+            <Field
+              Icon={Building2}
+              label="Institucioni"
+              primary={appointment.institutionName}
+            />
+          )}
           {appointment.notes && (
             <Field
               Icon={FileText}

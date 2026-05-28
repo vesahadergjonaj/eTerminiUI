@@ -1,11 +1,8 @@
-import { Calendar, Clock, Stethoscope, UserRound } from 'lucide-react'
+import { Building2, Calendar, Clock, FileText, Layers, Stethoscope, UserRound } from 'lucide-react'
 
 const formatDate = (iso) =>
   new Date(iso).toLocaleDateString('sq-AL', {
-    weekday: 'long',
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
+    weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
   })
 
 const formatTime = (iso) =>
@@ -25,14 +22,16 @@ function Row({ icon: Icon, label, value }) {
   )
 }
 
-export default function ConfirmStep({ service, doctor, date, slot, notes, onNotesChange }) {
+export default function ConfirmStep({ category, institution, service, provider, date, slot, notes, onNotesChange }) {
   return (
     <div className="space-y-5">
       <div className="rounded-xl border border-slate-200 bg-slate-50/40 px-4">
-        <Row icon={Stethoscope} label="Shërbimi" value={service?.name || '—'} />
-        <Row icon={UserRound}   label="Mjeku"    value={doctor ? `${doctor.fullName} · ${doctor.title}` : '—'} />
-        <Row icon={Calendar}    label="Data"     value={date ? formatDate(date) : '—'} />
-        <Row icon={Clock}       label="Ora"      value={slot ? formatTime(slot) : '—'} />
+        <Row icon={Layers}      label="Kategoria"   value={category?.name || '—'} />
+        <Row icon={Building2}   label="Institucioni" value={institution?.name || '—'} />
+        <Row icon={Stethoscope} label="Shërbimi"    value={service?.name || '—'} />
+        <Row icon={UserRound}   label="Zyrtari"     value={provider ? `${provider.fullName} · ${provider.title}` : '—'} />
+        <Row icon={Calendar}    label="Data"        value={date ? formatDate(date) : '—'} />
+        <Row icon={Clock}       label="Ora"         value={slot ? formatTime(slot) : '—'} />
       </div>
 
       <div>
@@ -44,9 +43,13 @@ export default function ConfirmStep({ service, doctor, date, slot, notes, onNote
           rows={3}
           value={notes}
           onChange={(e) => onNotesChange(e.target.value)}
-          placeholder="P.sh. simptoma, alergji, kërkesa të veçanta..."
+          placeholder="P.sh. dokumente që do t'i sjellësh, kërkesa të veçanta..."
           className="w-full px-3 py-2.5 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 resize-none"
         />
+        <div className="mt-2 text-[11px] text-slate-400 flex items-start gap-1.5">
+          <FileText className="w-3 h-3 mt-0.5 shrink-0" />
+          Shënimet do të dërgohen te zyrtari përgjegjës.
+        </div>
       </div>
     </div>
   )

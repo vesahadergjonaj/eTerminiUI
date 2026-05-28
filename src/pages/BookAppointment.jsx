@@ -4,8 +4,10 @@ import { ArrowLeft, ArrowRight, CheckCircle2, Loader2 } from 'lucide-react'
 
 import WizardStepper from '../components/booking/WizardStepper'
 import StepCard from '../components/booking/StepCard'
-import ServiceStep from '../components/booking/steps/ServiceStep'
-import DoctorStep from '../components/booking/steps/DoctorStep'
+import CategoryStep from '../components/booking/steps/CategoryStep'
+import InstitutionStep from '../components/booking/steps/InstitutionStep'
+import ServicePickStep from '../components/booking/steps/ServicePickStep'
+import ProviderStep from '../components/booking/steps/ProviderStep'
 import DateStep from '../components/booking/steps/DateStep'
 import TimeSlotStep from '../components/booking/steps/TimeSlotStep'
 import ConfirmStep from '../components/booking/steps/ConfirmStep'
@@ -13,19 +15,23 @@ import ConfirmStep from '../components/booking/steps/ConfirmStep'
 import { createAppointment } from '../api/appointmentsApi'
 
 const STEPS = [
-  { key: 'service', label: 'Shërbimi' },
-  { key: 'doctor',  label: 'Mjeku' },
-  { key: 'date',    label: 'Data' },
-  { key: 'slot',    label: 'Ora' },
-  { key: 'confirm', label: 'Konfirmo' },
+  { key: 'category',    label: 'Kategoria' },
+  { key: 'institution', label: 'Institucioni' },
+  { key: 'service',     label: 'Shërbimi' },
+  { key: 'provider',    label: 'Zyrtari' },
+  { key: 'date',        label: 'Data' },
+  { key: 'slot',        label: 'Ora' },
+  { key: 'confirm',     label: 'Konfirmo' },
 ]
 
 export default function BookAppointment() {
   const navigate = useNavigate()
 
   const [stepIndex, setStepIndex] = useState(0)
+  const [category, setCategory] = useState(null)
+  const [institution, setInstitution] = useState(null)
   const [service, setService] = useState(null)
-  const [doctor, setDoctor] = useState(null)
+  const [provider, setProvider] = useState(null)
   const [date, setDate] = useState('')
   const [slot, setSlot] = useState('')
   const [notes, setNotes] = useState('')
@@ -36,40 +42,48 @@ export default function BookAppointment() {
 
   const canContinue = useMemo(() => {
     switch (STEPS[stepIndex].key) {
-      case 'service': return Boolean(service)
-      case 'doctor':  return Boolean(doctor)
-      case 'date':    return Boolean(date)
-      case 'slot':    return Boolean(slot)
-      case 'confirm': return true
-      default:        return false
+      case 'category':    return Boolean(category)
+      case 'institution': return Boolean(institution)
+      case 'service':     return Boolean(service)
+      case 'provider':    return Boolean(provider)
+      case 'date':        return Boolean(date)
+      case 'slot':        return Boolean(slot)
+      case 'confirm':     return true
+      default:            return false
     }
-  }, [stepIndex, service, doctor, date, slot])
+  }, [stepIndex, category, institution, service, provider, date, slot])
 
   const goNext = () => setStepIndex((i) => Math.min(i + 1, STEPS.length - 1))
   const goBack = () => setStepIndex((i) => Math.max(i - 1, 0))
 
-  // Reset downstream selections when an earlier step changes
+  const handleCategoryChange = (c) => {
+    setCategory(c)
+    setInstitution(null); setService(null); setProvider(null); setSlot('')
+  }
+  const handleInstitutionChange = (i) => {
+    setInstitution(i)
+    setService(null); setProvider(null); setSlot('')
+  }
   const handleServiceChange = (s) => {
     setService(s)
-    setDoctor(null)
-    setSlot('')
+    setProvider(null); setSlot('')
   }
-  const handleDoctorChange = (d) => {
-    setDoctor(d)
+  const handleProviderChange = (p) => {
+    setProvider(p)
     setSlot('')
   }
   const handleDateChange = (d) => {
-    setDate(d)
-    setSlot('')
+    setDate(d); setSlot('')
   }
 
   const submit = async () => {
-    if (!doctor || !slot) return
+    if (!provider || !slot) return
     setSubmitting(true)
     setSubmitError(null)
     try {
       const { data } = await createAppointment({
-        doctorId: doctor.id,
+        doctorId: provider.id,
+        serviceId: service?.id,
         appointmentDate: slot,
         notes: notes || null,
       })
@@ -80,7 +94,7 @@ export default function BookAppointment() {
       if (status === 409) {
         setSubmitError(msg || 'Ky termin u rezervua nga dikush tjetër. Zgjedh një orë tjetër.')
         setSlot('')
-        setStepIndex(3)
+        setStepIndex(5)
       } else {
         setSubmitError(msg || 'Rezervimi dështoi. Provo përsëri.')
       }
@@ -101,8 +115,10 @@ export default function BookAppointment() {
             Përkujtuesi do të të dërgohet 24 orë para terminit.
           </p>
 
-          <div className="mt-6 rounded-xl bg-slate-50 border border-slate-100 px-4 py-3 text-left text-sm text-slate-700">
-            <div><span className="text-slate-400">Mjeku:</span> {confirmation.doctorFullName || doctor?.fullName}</div>
+          <div className="mt-6 rounded-xl bg-slate-50 border border-slate-100 px-4 py-3 text-left text-sm text-slate-700 space-y-1">
+            <div><span className="text-slate-400">Shërbimi:</span> {confirmation.serviceName || service?.name || '—'}</div>
+            <div><span className="text-slate-400">Institucioni:</span> {confirmation.institutionName || institution?.name || '—'}</div>
+            <div><span className="text-slate-400">Zyrtari:</span> {confirmation.doctorFullName || provider?.fullName}</div>
             <div><span className="text-slate-400">Data:</span> {new Date(confirmation.appointmentDate || slot).toLocaleString('sq-AL')}</div>
             <div><span className="text-slate-400">Statusi:</span> {confirmation.status}</div>
           </div>
@@ -116,13 +132,9 @@ export default function BookAppointment() {
             </Link>
             <button
               onClick={() => {
-                setConfirmation(null)
-                setStepIndex(0)
-                setService(null)
-                setDoctor(null)
-                setDate('')
-                setSlot('')
-                setNotes('')
+                setConfirmation(null); setStepIndex(0)
+                setCategory(null); setInstitution(null); setService(null)
+                setProvider(null); setDate(''); setSlot(''); setNotes('')
               }}
               className="flex-1 h-11 px-4 rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-50 text-sm font-semibold transition-colors"
             >
@@ -136,6 +148,26 @@ export default function BookAppointment() {
 
   const currentKey = STEPS[stepIndex].key
   const isLastStep = stepIndex === STEPS.length - 1
+
+  const stepTitle = {
+    category:    'Zgjedh kategorinë',
+    institution: 'Zgjedh institucionin',
+    service:     'Zgjedh shërbimin',
+    provider:    'Zgjedh zyrtarin',
+    date:        'Zgjedh datën',
+    slot:        'Zgjedh orën',
+    confirm:     'Konfirmo rezervimin',
+  }[currentKey]
+
+  const stepSubtitle = {
+    category:    'Çfarë lloj shërbimi ju nevojitet?',
+    institution: category ? `Institucionet që ofrojnë "${category.name}".` : 'Zgjedh institucionin.',
+    service:     institution ? `Shërbimet e disponueshme në ${institution.name}.` : 'Zgjedh shërbimin.',
+    provider:    service ? `Zyrtarët që mund të ofrojnë "${service.name}".` : 'Zgjedh zyrtarin.',
+    date:        'Zgjedh ditën që të përshtatet më shumë.',
+    slot:        'Terminet e lira përditësohen në kohë reale.',
+    confirm:     'Shiko detajet para se të konfirmosh.',
+  }[currentKey]
 
   return (
     <div className="min-h-[70vh] bg-slate-50 py-8 px-4">
@@ -151,7 +183,7 @@ export default function BookAppointment() {
             Rezervo një termin
           </h1>
           <p className="text-sm text-slate-500 mt-1">
-            Ndiq hapat për të zgjedhur shërbimin, mjekun dhe orën.
+            Ndiq hapat për të zgjedhur shërbimin, zyrtarin dhe orën.
           </p>
         </div>
 
@@ -160,20 +192,8 @@ export default function BookAppointment() {
         </div>
 
         <StepCard
-          title={
-            currentKey === 'service' ? 'Zgjedh shërbimin' :
-            currentKey === 'doctor'  ? 'Zgjedh mjekun' :
-            currentKey === 'date'    ? 'Zgjedh datën' :
-            currentKey === 'slot'    ? 'Zgjedh orën' :
-                                       'Konfirmo rezervimin'
-          }
-          subtitle={
-            currentKey === 'service' ? 'Cili shërbim ju nevojitet?' :
-            currentKey === 'doctor'  ? `Mjekët e disponueshëm për ${service?.name || 'shërbimin e zgjedhur'}.` :
-            currentKey === 'date'    ? 'Zgjedh ditën që të përshtatet më shumë.' :
-            currentKey === 'slot'    ? 'Terminet e lira përditësohen në kohë reale.' :
-                                       'Shiko detajet para se të konfirmosh.'
-          }
+          title={stepTitle}
+          subtitle={stepSubtitle}
           footer={
             <>
               <button
@@ -220,18 +240,24 @@ export default function BookAppointment() {
             </div>
           )}
 
-          {currentKey === 'service' && (
-            <ServiceStep value={service} onChange={handleServiceChange} />
+          {currentKey === 'category' && (
+            <CategoryStep value={category} onChange={handleCategoryChange} />
           )}
-          {currentKey === 'doctor' && (
-            <DoctorStep service={service} value={doctor} onChange={handleDoctorChange} />
+          {currentKey === 'institution' && (
+            <InstitutionStep categoryId={category?.id} value={institution} onChange={handleInstitutionChange} />
+          )}
+          {currentKey === 'service' && (
+            <ServicePickStep institutionId={institution?.id} categoryId={category?.id} value={service} onChange={handleServiceChange} />
+          )}
+          {currentKey === 'provider' && (
+            <ProviderStep serviceId={service?.id} value={provider} onChange={handleProviderChange} />
           )}
           {currentKey === 'date' && (
             <DateStep value={date} onChange={handleDateChange} />
           )}
           {currentKey === 'slot' && (
             <TimeSlotStep
-              doctorId={doctor?.id}
+              doctorId={provider?.id}
               date={date}
               durationMinutes={service?.durationMinutes || 30}
               value={slot}
@@ -240,8 +266,10 @@ export default function BookAppointment() {
           )}
           {currentKey === 'confirm' && (
             <ConfirmStep
+              category={category}
+              institution={institution}
               service={service}
-              doctor={doctor}
+              provider={provider}
               date={date}
               slot={slot}
               notes={notes}
