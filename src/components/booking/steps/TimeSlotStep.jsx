@@ -1,15 +1,30 @@
+import { useEffect, useRef, useState } from 'react'
 import { Clock, RefreshCw } from 'lucide-react'
-import { useAvailableSlots } from '../../../hooks/useAvailableSlots'
+import { useLiveAvailableSlots } from '../../../hooks/useLiveAvailableSlots'
 
 const formatTime = (iso) =>
   new Date(iso).toLocaleTimeString('sq-AL', { hour: '2-digit', minute: '2-digit' })
 
 export default function TimeSlotStep({ doctorId, date, durationMinutes, value, onChange }) {
-  const { slots, loading, error, refetch } = useAvailableSlots({
+  const { slots, loading, error, refetch } = useLiveAvailableSlots({
     doctorId,
     date,
     durationMinutes,
   })
+
+  // Highlight when a live update arrives (after the first fetch).
+  const [pulse, setPulse] = useState(false)
+  const isFirstLoad = useRef(true)
+  useEffect(() => {
+    if (loading) return
+    if (isFirstLoad.current) {
+      isFirstLoad.current = false
+      return
+    }
+    setPulse(true)
+    const t = setTimeout(() => setPulse(false), 1200)
+    return () => clearTimeout(t)
+  }, [slots, loading])
 
   if (loading) {
     return (
@@ -45,26 +60,35 @@ export default function TimeSlotStep({ doctorId, date, durationMinutes, value, o
   }
 
   return (
-    <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2">
-      {slots.map((slot) => {
-        const iso = slot.startTime
-        const selected = value === iso
-        return (
-          <button
-            key={iso}
-            type="button"
-            onClick={() => onChange(iso)}
-            className={[
-              'h-11 rounded-xl border text-sm font-medium transition-all',
-              selected
-                ? 'border-blue-500 bg-blue-600 text-white shadow-sm'
-                : 'border-slate-200 text-slate-700 hover:border-blue-300 hover:bg-slate-50',
-            ].join(' ')}
-          >
-            {formatTime(iso)}
-          </button>
-        )
-      })}
+    <div>
+      <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2">
+        {slots.map((slot) => {
+          const iso = slot.startTime
+          const selected = value === iso
+          return (
+            <button
+              key={iso}
+              type="button"
+              onClick={() => onChange(iso)}
+              className={[
+                'h-11 rounded-xl border text-sm font-medium transition-all',
+                selected
+                  ? 'border-blue-500 bg-blue-600 text-white shadow-sm'
+                  : 'border-slate-200 text-slate-700 hover:border-blue-300 hover:bg-slate-50',
+                pulse && !selected ? 'animate-pulse' : '',
+              ].join(' ')}
+            >
+              {formatTime(iso)}
+            </button>
+          )
+        })}
+      </div>
+      {pulse && (
+        <p className="mt-3 text-[11px] text-blue-600 flex items-center gap-1.5">
+          <RefreshCw className="w-3 h-3" />
+          Lista u përditësua sapo (live)
+        </p>
+      )}
     </div>
   )
 }
