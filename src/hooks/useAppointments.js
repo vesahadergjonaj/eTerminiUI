@@ -9,11 +9,10 @@ export function useAppointments() {
 
   const fetchAppointments = useCallback(async () => {
     setLoading(true)
-    //console.log('Fetching appointments...');
     setError(null)
     try {
       const { data } = await getMyAppointments()
-      setAppointments(data)
+      setAppointments(Array.isArray(data) ? data : [])
     } catch (err) {
       setError(err.response?.data?.message || 'Nuk u ngarkuan terminet.')
     } finally {
@@ -27,13 +26,15 @@ export function useAppointments() {
 
   const cancel = useCallback(async (id) => {
     setCancelling(id)
+    setError(null)
     try {
       await cancelAppointment(id)
-      setAppointments((prev) =>
-        prev.map((a) => a.id === id ? { ...a, status: 'Cancelled' } : a)
-      )
+      setAppointments((prev) => prev.filter((a) => a.id !== id))
+      return { ok: true }
     } catch (err) {
-      setError(err.response?.data?.message || 'Anulimi dështoi.')
+      const msg = err.response?.data?.message || 'Anulimi dështoi.'
+      setError(msg)
+      return { ok: false, error: msg }
     } finally {
       setCancelling(null)
     }
