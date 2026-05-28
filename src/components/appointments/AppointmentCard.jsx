@@ -1,4 +1,4 @@
-import { Calendar, Clock, FileText, Stethoscope, Ban, Loader2 } from 'lucide-react'
+import { Calendar, CalendarClock, Clock, FileText, Stethoscope, Ban, Loader2 } from 'lucide-react'
 import StatusBadge from './StatusBadge'
 
 const isActive = (status) => status === 'Pending' || status === 'Confirmed'
@@ -35,8 +35,8 @@ function Field({ Icon, label, primary, secondary, full }) {
   )
 }
 
-export default function AppointmentCard({ appointment, cancelling, onCancel }) {
-  const showCancel = isActive(appointment.status)
+export default function AppointmentCard({ appointment, cancelling, rescheduling, onCancel, onReschedule }) {
+  const showActions = isActive(appointment.status)
   const doctorLine = [appointment.doctorTitle, appointment.doctorFullName]
     .filter(Boolean)
     .join(' · ') || 'Mjeku nuk është caktuar'
@@ -85,11 +85,26 @@ export default function AppointmentCard({ appointment, cancelling, onCancel }) {
           )}
         </div>
 
-        {showCancel && (
+        {showActions && (
           <div className="mt-5 flex flex-wrap gap-2">
             <button
+              onClick={onReschedule}
+              disabled={cancelling || rescheduling}
+              className="inline-flex items-center gap-1.5 text-sm text-blue-700 bg-blue-50 hover:bg-blue-100 border border-blue-200 px-3.5 py-2 rounded-xl font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {rescheduling ? (
+                <>
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" /> Duke riprogramuar...
+                </>
+              ) : (
+                <>
+                  <CalendarClock className="w-3.5 h-3.5" /> Riprogramo
+                </>
+              )}
+            </button>
+            <button
               onClick={onCancel}
-              disabled={cancelling}
+              disabled={cancelling || rescheduling}
               className="inline-flex items-center gap-1.5 text-sm text-red-600 bg-red-50 hover:bg-red-100 border border-red-200 px-3.5 py-2 rounded-xl font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {cancelling ? (
@@ -98,7 +113,7 @@ export default function AppointmentCard({ appointment, cancelling, onCancel }) {
                 </>
               ) : (
                 <>
-                  <Ban className="w-3.5 h-3.5" /> Anulo terminin
+                  <Ban className="w-3.5 h-3.5" /> Anulo
                 </>
               )}
             </button>

@@ -17,6 +17,7 @@ import SummaryCard from '../components/appointments/SummaryCard'
 import FilterTabs from '../components/appointments/FilterTabs'
 import EmptyState from '../components/appointments/EmptyState'
 import AppointmentCard from '../components/appointments/AppointmentCard'
+import RescheduleDialog from '../components/appointments/RescheduleDialog'
 
 const isActiveStatus = (s) => s === 'Pending' || s === 'Confirmed'
 const isUpcoming = (apt) =>
@@ -24,10 +25,12 @@ const isUpcoming = (apt) =>
 
 export default function MyAppointments() {
   const { user } = useAuth()
-  const { appointments, loading, error, cancel, cancelling, refetch } = useAppointments()
+  const { appointments, loading, error, cancel, cancelling, reschedule, rescheduling, refetch } = useAppointments()
 
   const [activeTab, setActiveTab] = useState('all')
   const [pendingCancel, setPendingCancel] = useState(null)
+  const [reschedulingApt, setReschedulingApt] = useState(null)
+  const [rescheduleError, setRescheduleError] = useState(null)
   const [toast, setToast] = useState(null)
 
   useEffect(() => {
@@ -70,6 +73,23 @@ export default function MyAppointments() {
     setToast(result.ok
       ? { type: 'success', message: 'Termini u anulua me sukses.' }
       : { type: 'error',   message: result.error || 'Anulimi dështoi.' })
+  }
+
+  const handleReschedule = (apt) => {
+    setRescheduleError(null)
+    setReschedulingApt(apt)
+  }
+
+  const handleConfirmReschedule = async (payload) => {
+    if (!reschedulingApt) return
+    setRescheduleError(null)
+    const result = await reschedule(reschedulingApt.id, payload)
+    if (result.ok) {
+      setReschedulingApt(null)
+      setToast({ type: 'success', message: 'Termini u riprogramua me sukses.' })
+    } else {
+      setRescheduleError(result.error || 'Riprogramimi dështoi.')
+    }
   }
 
   return (
@@ -140,7 +160,9 @@ export default function MyAppointments() {
                   key={apt.id}
                   appointment={apt}
                   cancelling={cancelling === apt.id}
+                  rescheduling={rescheduling === apt.id}
                   onCancel={() => setPendingCancel(apt)}
+                  onReschedule={() => handleReschedule(apt)}
                 />
               ))}
             </div>
@@ -156,6 +178,19 @@ export default function MyAppointments() {
           confirmTone="danger"
           onConfirm={handleConfirmCancel}
           onCancel={() => setPendingCancel(null)}
+        />
+      )}
+
+      {reschedulingApt && (
+        <RescheduleDialog
+          appointment={reschedulingApt}
+          submitting={rescheduling === reschedulingApt.id}
+          error={rescheduleError}
+          onConfirm={handleConfirmReschedule}
+          onClose={() => {
+            setReschedulingApt(null)
+            setRescheduleError(null)
+          }}
         />
       )}
 
