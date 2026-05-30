@@ -8,6 +8,7 @@ import {
 import { useAuth } from '../context/AuthContext'
 import { useAppointments } from '../hooks/useAppointments'
 import { useInstitutions } from '../hooks/useInstitutions'
+import StatisticsSection from '../components/StatisticsSection'
 
 const isActive = (s) => s === 'Pending' || s === 'Confirmed'
 
@@ -72,6 +73,9 @@ function GuestHome() {
           </div>
         </div>
       </section>
+
+      {/* Statistics */}
+      <StatisticsSection />
 
       {/* Features */}
       <section className="max-w-5xl mx-auto px-6 sm:px-8 lg:px-12 py-16">
