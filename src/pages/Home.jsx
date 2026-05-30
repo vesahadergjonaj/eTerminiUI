@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useRef } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import {
   Calendar, ArrowRight, Loader2, Plus, Building2,
@@ -7,7 +7,8 @@ import {
 } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { useAppointments } from '../hooks/useAppointments'
-import { useInstitutions } from '../hooks/useInstitutions'
+import { useInstitutionSearch } from '../hooks/useInstitutionSearch'
+import { getInstitutionContext } from '../api/institutionsApi'
 import StatisticsSection from '../components/StatisticsSection'
 
 const isActive = (s) => s === 'Pending' || s === 'Confirmed'
@@ -124,25 +125,21 @@ function AuthedHome() {
   const { user } = useAuth()
   const navigate = useNavigate()
   const { appointments, loading: aptLoading } = useAppointments()
-  const { institutions, loading: instLoading } = useInstitutions()
 
   const [query, setQuery] = useState('')
   const [open, setOpen] = useState(false)
+  const [context, setContext] = useState(null)
   const wrapRef = useRef(null)
+
+  const { results, searching } = useInstitutionSearch(query)
 
   const activeCount = appointments.filter((a) => isActive(a.status)).length
 
-  const matches = useMemo(() => {
-    if (!query.trim()) return []
-    const q = query.toLowerCase()
-    return institutions
-      .filter((i) =>
-        i.name.toLowerCase().includes(q) ||
-        (i.city || '').toLowerCase().includes(q) ||
-        (i.description || '').toLowerCase().includes(q)
-      )
-      .slice(0, 6)
-  }, [institutions, query])
+  useEffect(() => {
+    getInstitutionContext()
+      .then(({ data }) => setContext(data))
+      .catch(() => {})
+  }, [])
 
   useEffect(() => {
     const handler = (e) => {
@@ -231,21 +228,29 @@ function AuthedHome() {
           <h2 className="text-xl font-bold text-slate-900 tracking-tight mb-1">
             Çfarë po kërkoni sot?
           </h2>
-          <p className="text-slate-500 text-sm">
-            Kërkoni institucionin për të rezervuar terminin tuaj
-          </p>
+          {context?.city ? (
+            <p className="text-slate-500 text-sm flex items-center gap-1.5">
+              <MapPin className="w-3.5 h-3.5 text-blue-500 shrink-0" />
+              Po kërkoni institucione në:{' '}
+              <span className="font-medium text-blue-600">{context.city}</span>
+            </p>
+          ) : (
+            <p className="text-slate-500 text-sm">
+              Kërkoni institucionin për të rezervuar terminin tuaj
+            </p>
+          )}
         </div>
 
         <div ref={wrapRef} className="relative">
-          <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 pointer-events-none" />
+          <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 pointer-events-none z-10" />
           <input
             type="text"
             value={query}
             onChange={(e) => { setQuery(e.target.value); setOpen(true) }}
             onFocus={() => setOpen(true)}
             onKeyDown={(e) => {
-              if (e.key === 'Enter' && matches[0]) goToInstitution(matches[0])
-              if (e.key === 'Escape') setOpen(false)
+              if (e.key === 'Enter' && results[0]) goToInstitution(results[0])
+              if (e.key === 'Escape') { setOpen(false) }
             }}
             placeholder="p.sh. QKUK, Komuna e Prishtinës, Stomatologji..."
             className="w-full h-14 pl-14 pr-12 text-base bg-slate-50 border border-transparent rounded-2xl focus:outline-none focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all placeholder-slate-400"
@@ -253,40 +258,40 @@ function AuthedHome() {
           {query && (
             <button
               onClick={() => { setQuery(''); setOpen(false) }}
-              className="absolute right-4 top-1/2 -translate-y-1/2 p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors"
+              className="absolute right-4 top-1/2 -translate-y-1/2 p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors z-10"
             >
               <X className="w-4 h-4" />
             </button>
           )}
 
-          {open && query.trim() && (
+          {open && query.trim().length >= 2 && (
             <div className="absolute left-0 right-0 top-full mt-2 bg-white rounded-2xl shadow-xl ring-1 ring-slate-200 overflow-hidden z-30 fade-in">
-              {instLoading ? (
+              {searching ? (
                 <div className="p-5 flex items-center gap-2 text-sm text-slate-500">
                   <Loader2 className="w-4 h-4 animate-spin" />
                   Duke kërkuar...
                 </div>
-              ) : matches.length === 0 ? (
+              ) : results.length === 0 ? (
                 <div className="p-6 text-center">
                   <div className="w-12 h-12 rounded-2xl bg-slate-50 flex items-center justify-center mx-auto mb-3">
                     <Search className="w-5 h-5 text-slate-400" />
                   </div>
                   <p className="text-slate-800 text-sm font-semibold mb-1">
-                    Asnjë institucion s'u gjet
+                    Nuk u gjet asnjë institucion.
                   </p>
                   <p className="text-slate-500 text-xs">
-                    Mund të mos jetë i mbështetur ende terminin në institucionin që po kërkoni
+                    Mund të mos jetë i mbështetur ende termini në institucionin që po kërkoni.
                   </p>
                 </div>
               ) : (
                 <>
                   <div className="px-4 py-2 bg-slate-50 border-b border-slate-100">
                     <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
-                      {matches.length} rezultat{matches.length === 1 ? '' : 'e'}
+                      {results.length} rezultat{results.length === 1 ? '' : 'e'}
                     </span>
                   </div>
                   <ul className="max-h-80 overflow-y-auto premium-scroll">
-                    {matches.map((inst, i) => (
+                    {results.map((inst, i) => (
                       <li key={inst.id}>
                         <button
                           type="button"
@@ -300,12 +305,9 @@ function AuthedHome() {
                             <p className="text-sm font-semibold text-slate-900 group-hover:text-blue-700 transition-colors truncate">
                               {inst.name}
                             </p>
-                            {inst.city && (
-                              <span className="inline-flex items-center gap-1 text-xs text-slate-500 mt-0.5">
-                                <MapPin className="w-3 h-3" />
-                                {inst.city}
-                              </span>
-                            )}
+                            <span className="text-xs text-slate-500 mt-0.5">
+                              {[inst.categoryName, inst.city].filter(Boolean).join(' • ')}
+                            </span>
                           </div>
                           {i === 0 && (
                             <span className="hidden sm:inline-flex items-center gap-1 text-[10px] font-medium text-slate-400 bg-slate-50 px-2 py-1 rounded-md ring-1 ring-slate-200">

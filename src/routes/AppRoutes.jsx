@@ -8,7 +8,6 @@ import Login from '../pages/Login'
 import Register from '../pages/Register'
 import MyAppointments from '../pages/MyAppointments'
 import BookAppointment from '../pages/BookAppointment'
-import Departments from '../pages/Departments'
 import NotFound from '../pages/NotFound'
 
 export default function AppRoutes() {
@@ -29,14 +28,6 @@ export default function AppRoutes() {
           element={
             <ProtectedRoute>
               <BookAppointment />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/departments"
-          element={
-            <ProtectedRoute>
-              <Departments />
             </ProtectedRoute>
           }
         />
