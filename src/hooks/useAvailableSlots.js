@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { getAvailableSlots } from '../api/timeslotsApi'
 
 export function useAvailableSlots({ doctorId, date, durationMinutes = 30 }) {
@@ -36,5 +36,7 @@ export function useAvailableSlots({ doctorId, date, durationMinutes = 30 }) {
     }
   }, [doctorId, date, durationMinutes, reloadKey])
 
-  return { slots, loading, error, refetch: () => setReloadKey((k) => k + 1) }
+  const refetch = useCallback(() => setReloadKey((k) => k + 1), [])
+
+  return { slots, loading, error, refetch }
 }

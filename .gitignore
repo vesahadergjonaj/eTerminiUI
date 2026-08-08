@@ -22,3 +22,8 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Environment variables (perdor .env.example si model)
+.env
+.env.local
+.env.*.local
