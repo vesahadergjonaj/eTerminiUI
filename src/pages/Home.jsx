@@ -39,26 +39,26 @@ function GuestHome() {
           }}
         />
 
-        <div className="relative max-w-5xl mx-auto px-6 sm:px-8 lg:px-12 py-20 md:py-28 text-center">
-          <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 text-white/90 text-xs font-medium px-3 py-1.5 rounded-full mb-7">
-            <Sparkles className="w-3.5 h-3.5 text-cyan-300" />
-            Platforma Zyrtare Digjitale · Republika e Kosovës
+        <div className="relative max-w-5xl mx-auto px-4 sm:px-8 lg:px-12 py-14 sm:py-20 md:py-28 text-center">
+          <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 text-white/90 text-[11px] sm:text-xs font-medium px-3 py-1.5 rounded-full mb-6 sm:mb-7 max-w-full">
+            <Sparkles className="w-3.5 h-3.5 text-cyan-300 shrink-0" />
+            <span className="truncate">Platforma Zyrtare Digjitale · Republika e Kosovës</span>
           </div>
 
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-[1.1] tracking-tight mb-5">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold leading-[1.1] tracking-tight mb-4 sm:mb-5">
             Rezervo terminin tuaj{' '}
             <span className="bg-gradient-to-r from-cyan-300 via-blue-200 to-violet-300 bg-clip-text text-transparent">
               pa pritje në radhë
             </span>
           </h1>
-          <p className="text-blue-100/80 text-base md:text-lg max-w-2xl mx-auto mb-9">
+          <p className="text-blue-100/80 text-sm sm:text-base md:text-lg max-w-2xl mx-auto mb-7 sm:mb-9">
             Shëndetësi, polici, komuna, ministri — të gjitha institucionet publike në një vend.
           </p>
 
-          <div className="flex flex-wrap justify-center gap-3">
+          <div className="flex flex-col sm:flex-row flex-wrap justify-center gap-3">
             <Link
               to="/register"
-              className="group relative inline-flex items-center gap-2 h-12 px-7 rounded-2xl font-semibold text-sm overflow-hidden transition-all hover:-translate-y-0.5 bg-white text-blue-700 shadow-xl shadow-blue-950/30"
+              className="group relative inline-flex items-center justify-center gap-2 h-12 px-6 sm:px-7 rounded-2xl font-semibold text-sm overflow-hidden transition-all hover:-translate-y-0.5 bg-white text-blue-700 shadow-xl shadow-blue-950/30"
             >
               <span className="relative flex items-center gap-2">
                 Krijo llogari falas
@@ -67,7 +67,7 @@ function GuestHome() {
             </Link>
             <Link
               to="/login"
-              className="inline-flex items-center gap-2 h-12 px-7 rounded-2xl font-semibold text-sm bg-white/10 hover:bg-white/15 border border-white/20 backdrop-blur transition-colors"
+              className="inline-flex items-center justify-center gap-2 h-12 px-6 sm:px-7 rounded-2xl font-semibold text-sm bg-white/10 hover:bg-white/15 border border-white/20 backdrop-blur transition-colors"
             >
               Hyni në llogari
             </Link>
@@ -79,8 +79,8 @@ function GuestHome() {
       <StatisticsSection />
 
       {/* Features */}
-      <section className="max-w-5xl mx-auto px-6 sm:px-8 lg:px-12 py-16">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+      <section className="max-w-5xl mx-auto px-4 sm:px-8 lg:px-12 py-10 sm:py-16">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-5">
           <FeatureCard
             Icon={Zap}
             title="Pa pritje në radhë"
@@ -154,11 +154,11 @@ function AuthedHome() {
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 py-10">
+    <div className="max-w-7xl mx-auto px-4 sm:px-8 lg:px-12 py-6 sm:py-10">
       {/* Welcome + CTA */}
-      <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-8">
+      <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-6 sm:mb-8">
         <div>
-          <h1 className="text-2xl md:text-3xl font-bold text-slate-900 tracking-tight">
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-slate-900 tracking-tight">
             Mirë se vini{user?.fullName ? `, ${user.fullName.split(' ')[0]}` : ''}
           </h1>
           <p className="text-slate-500 text-sm mt-1">Përmbledhje e shpejtë e termineve tuaja</p>
@@ -166,7 +166,7 @@ function AuthedHome() {
 
         <Link
           to="/book"
-          className="group relative inline-flex items-center justify-center gap-2 h-12 px-6 rounded-2xl font-semibold text-sm text-white overflow-hidden transition-all hover:-translate-y-0.5 self-start sm:self-end"
+          className="group relative inline-flex items-center justify-center gap-2 h-12 px-6 rounded-2xl font-semibold text-sm text-white overflow-hidden transition-all hover:-translate-y-0.5 self-stretch sm:self-end"
         >
           <span className="absolute inset-0 bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600 transition-all duration-500 group-hover:from-blue-700 group-hover:via-indigo-700 group-hover:to-violet-700" />
           <span className="absolute -inset-1 bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600 blur-lg opacity-40 group-hover:opacity-70 transition-opacity -z-10" />
@@ -182,11 +182,11 @@ function AuthedHome() {
       </div>
 
       {/* Active appointments card */}
-      <div className="relative bg-gradient-to-br from-blue-600 via-indigo-600 to-violet-700 rounded-3xl overflow-hidden shadow-xl shadow-blue-900/20 mb-8">
+      <div className="relative bg-gradient-to-br from-blue-600 via-indigo-600 to-violet-700 rounded-3xl overflow-hidden shadow-xl shadow-blue-900/20 mb-6 sm:mb-8">
         <div className="absolute -top-16 -right-16 w-48 h-48 bg-cyan-400/20 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute -bottom-16 -left-16 w-48 h-48 bg-violet-400/20 rounded-full blur-3xl pointer-events-none" />
 
-        <div className="relative p-7">
+        <div className="relative p-5 sm:p-7">
           <div className="flex items-center justify-between mb-5">
             <span className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-blue-100/80">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
@@ -201,7 +201,7 @@ function AuthedHome() {
             {aptLoading ? (
               <Loader2 className="w-10 h-10 text-white/70 animate-spin" />
             ) : (
-              <p className="text-white font-bold text-6xl leading-none tracking-tight">
+              <p className="text-white font-bold text-5xl sm:text-6xl leading-none tracking-tight">
                 {activeCount}
               </p>
             )}
@@ -223,7 +223,7 @@ function AuthedHome() {
       </div>
 
       {/* Search section */}
-      <div className="bg-white rounded-3xl shadow-sm ring-1 ring-slate-200/80 p-6 sm:p-8">
+      <div className="bg-white rounded-3xl shadow-sm ring-1 ring-slate-200/80 p-5 sm:p-8">
         <div className="mb-5">
           <h2 className="text-xl font-bold text-slate-900 tracking-tight mb-1">
             Çfarë po kërkoni sot?

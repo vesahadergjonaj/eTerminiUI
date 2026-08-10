@@ -1,9 +1,36 @@
 import { Check } from 'lucide-react'
 
 export default function WizardStepper({ steps, currentStep }) {
+  const current = steps[currentStep]
+  const progressPct = ((currentStep + 1) / steps.length) * 100
+
   return (
     <nav aria-label="Hapat e rezervimit" className="w-full">
-      <ol className="flex items-center justify-between gap-2">
+      {/* Mobile: compact progress + label */}
+      <div className="sm:hidden">
+        <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center gap-2 min-w-0">
+            <span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-blue-600 text-white text-xs font-bold shrink-0">
+              {currentStep + 1}
+            </span>
+            <span className="text-sm font-semibold text-slate-800 truncate">
+              {current?.label}
+            </span>
+          </div>
+          <span className="text-[11px] font-medium text-slate-500 shrink-0">
+            {currentStep + 1} / {steps.length}
+          </span>
+        </div>
+        <div className="h-1.5 w-full bg-slate-200 rounded-full overflow-hidden">
+          <div
+            className="h-full bg-gradient-to-r from-blue-600 to-indigo-600 transition-all duration-300"
+            style={{ width: `${progressPct}%` }}
+          />
+        </div>
+      </div>
+
+      {/* Desktop: full stepper */}
+      <ol className="hidden sm:flex items-center justify-between gap-2">
         {steps.map((step, index) => {
           const isComplete = index < currentStep
           const isActive = index === currentStep

@@ -170,16 +170,16 @@ export default function BookAppointment() {
   }[currentKey]
 
   return (
-    <div className="min-h-[70vh] bg-slate-50 py-8 px-4">
+    <div className="min-h-[70vh] bg-slate-50 py-5 sm:py-8 px-3 sm:px-4">
       <div className="max-w-3xl mx-auto">
-        <div className="mb-6">
+        <div className="mb-5 sm:mb-6">
           <button
             onClick={() => navigate(-1)}
             className="text-sm text-slate-500 hover:text-slate-700 inline-flex items-center gap-1"
           >
             <ArrowLeft className="w-4 h-4" /> Kthehu
           </button>
-          <h1 className="text-2xl sm:text-3xl font-semibold text-slate-900 mt-2 tracking-tight">
+          <h1 className="text-xl sm:text-3xl font-semibold text-slate-900 mt-2 tracking-tight">
             Rezervo një termin
           </h1>
           <p className="text-sm text-slate-500 mt-1">
@@ -200,7 +200,7 @@ export default function BookAppointment() {
                 type="button"
                 onClick={goBack}
                 disabled={stepIndex === 0 || submitting}
-                className="inline-flex items-center gap-1 h-10 px-4 rounded-xl border border-slate-200 text-slate-700 text-sm font-medium hover:bg-white disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                className="inline-flex items-center gap-1 h-10 px-3 sm:px-4 rounded-xl border border-slate-200 text-slate-700 text-sm font-medium hover:bg-white disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
               >
                 <ArrowLeft className="w-4 h-4" /> Mbrapa
               </button>
@@ -210,7 +210,7 @@ export default function BookAppointment() {
                   type="button"
                   onClick={goNext}
                   disabled={!canContinue}
-                  className="inline-flex items-center gap-1 h-10 px-5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                  className="inline-flex items-center gap-1 h-10 px-4 sm:px-5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                 >
                   Vazhdo <ArrowRight className="w-4 h-4" />
                 </button>

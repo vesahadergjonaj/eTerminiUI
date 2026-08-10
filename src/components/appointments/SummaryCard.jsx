@@ -7,12 +7,12 @@ export default function SummaryCard({ label, value, Icon, tone = 'slate' }) {
   const t = tones[tone] ?? tones.slate
 
   return (
-    <div className={`rounded-2xl p-4 shadow-sm ${t.card}`}>
-      <div className="flex items-center justify-between mb-2">
-        <span className={`text-xs font-medium uppercase tracking-wide ${t.sub}`}>{label}</span>
-        {Icon && <Icon className={`w-5 h-5 ${t.icon}`} />}
+    <div className={`rounded-2xl p-3 sm:p-4 shadow-sm ${t.card}`}>
+      <div className="flex items-center justify-between mb-2 gap-1">
+        <span className={`text-[10px] sm:text-xs font-medium uppercase tracking-wide truncate ${t.sub}`}>{label}</span>
+        {Icon && <Icon className={`w-4 h-4 sm:w-5 sm:h-5 shrink-0 ${t.icon}`} />}
       </div>
-      <p className={`text-3xl font-bold ${t.num}`}>{value}</p>
+      <p className={`text-2xl sm:text-3xl font-bold ${t.num}`}>{value}</p>
     </div>
   )
 }

@@ -27,7 +27,7 @@ const STATS_CONFIG = [
 
 function StatCard({ Icon, label, value, accent, glow, loading }) {
   return (
-    <div className="group relative bg-white rounded-3xl ring-1 ring-slate-200/80 shadow-sm hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 p-7 flex flex-col items-center text-center overflow-hidden">
+    <div className="group relative bg-white rounded-3xl ring-1 ring-slate-200/80 shadow-sm hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 p-5 sm:p-7 flex flex-col items-center text-center overflow-hidden">
       <div className={`absolute -inset-px bg-gradient-to-br ${accent} opacity-0 group-hover:opacity-5 rounded-3xl transition-opacity duration-300 pointer-events-none`} />
 
       <div className={`relative w-14 h-14 rounded-2xl bg-gradient-to-br ${accent} flex items-center justify-center shadow-md mb-5`}>
@@ -47,7 +47,7 @@ function StatCard({ Icon, label, value, accent, glow, loading }) {
             ))}
           </div>
         ) : (
-          <p className="text-5xl font-bold text-slate-900 tracking-tight leading-none">
+          <p className="text-4xl sm:text-5xl font-bold text-slate-900 tracking-tight leading-none">
             {value ?? '—'}
           </p>
         )}
@@ -62,7 +62,7 @@ export default function StatisticsSection() {
   const { stats, loading } = useStatistics()
 
   return (
-    <section className="max-w-5xl mx-auto px-6 sm:px-8 lg:px-12 py-14">
+    <section className="max-w-5xl mx-auto px-4 sm:px-8 lg:px-12 py-10 sm:py-14">
       <div className="text-center mb-10">
         <h2 className="text-2xl md:text-3xl font-bold text-slate-900 tracking-tight mb-2">
           Platforma në numra

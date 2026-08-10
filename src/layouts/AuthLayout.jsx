@@ -118,7 +118,7 @@ export default function AuthLayout() {
       </div>
 
       {/* ── RIGHT PANEL ────────────────────────────────────── */}
-      <div className="flex-1 flex flex-col items-center justify-center px-6 sm:px-10 py-12 overflow-y-auto premium-scroll relative bg-slate-50">
+      <div className="flex-1 flex flex-col items-center justify-center px-4 sm:px-10 py-8 sm:py-12 overflow-y-auto premium-scroll relative bg-slate-50">
         {/* Subtle background accents */}
         <div className="absolute top-0 right-0 w-96 h-96 bg-violet-200/30 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute bottom-0 left-0 w-96 h-96 bg-blue-200/30 rounded-full blur-3xl pointer-events-none" />
@@ -133,7 +133,7 @@ export default function AuthLayout() {
 
         {/* Form card with subtle glass */}
         <div className="w-full max-w-md relative z-10 fade-in">
-          <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-[0_20px_60px_-15px_rgba(15,23,42,0.15)] ring-1 ring-slate-200/80 px-10 sm:px-12 py-10 sm:py-12">
+          <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-[0_20px_60px_-15px_rgba(15,23,42,0.15)] ring-1 ring-slate-200/80 px-6 sm:px-12 py-8 sm:py-12">
             <Outlet />
           </div>
 
